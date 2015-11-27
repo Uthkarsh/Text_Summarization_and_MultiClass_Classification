@@ -2,25 +2,20 @@ import sys
 import re
 import os
 from collections import namedtuple
+from consolidate import preProcess
 
-''' Returns a tuple containing the label for the corresponding file and the tokenized words. '''
-def preProcess(fp):
+def getTuple(line):
 	label = None
-	words = list()
-	for tempWords in fp:
-		for word in tempWords.split():
-			if word == 'Business' or word == 'Logistics' or word == 'Personal':
-				if label == None: # To make sure that the later text in the file do not change the actual label
-					label = word
-				continue
-			temp = re.sub(r'[.|,|;|_|:|?|!|@|#|$|%|^|&|*|(|)|"|\'|/|\\|>|<|\-|=|+|\[|]|\}|\{',r'',word)
-			temp = re.sub(r'[0-9]',r'',temp)
-			if len(temp)!=0:
-				words.append(temp.lower())
+	tempList = list()
+	for word in line.split():
+		if label == None:
+			label = word
+			continue
+		tempList.append(word)
 
 	tuple = namedtuple('tuple',['label','words'])
 	tuple.label = label
-	tuple.words = words
+	tuple.words = tempList
 	return tuple
 
 
@@ -31,30 +26,53 @@ def buildTable():
 	feature name and the value will be a named tuple. The tuples would have the name
 	as the label names -- business, logistics and personal '''
 	weightsTable = dict()
-	path = "trainingData"
-	files = sorted(os.listdir(path))
-	for fileName in files:
-		fp = open(path+"/"+fileName)
-		# call the preProcess function to tokenize the file
-		tuple = preProcess(fp)
 
+	fp = open("Consolidated.txt", "r")
+
+	count = 0
+	for line in fp:
+		# call the preProcess function to tokenize the file
+		count+=1
+		tuple = getTuple(line);
+		#print(tuple.words)
 		for word in tuple.words:
-			if word not in weightsTable:
+			if word not in weightsTable.keys():
 				# Add thd word to the table with all the label weights as zero
 				tempTuple = namedtuple('labelsWeights', ['Business','Logistics','Personal'])
 				tempTuple.Business = tempTuple.Logistics = tempTuple.Personal = 0
 				weightsTable[word] = tempTuple
-		fp.close()
+
+	print(count)
+
+	fp.close()
 		#break # For testing purposes, do it for only one file. Should Remove later. 
 
 	# Finally return the weightstable to the calling function. 
 	return weightsTable
 
+# Parses the command line options and returns the corresponding maxIterations value. 
+# By default, if nothing is specified, 5 is sent.
+def getMaxIterations():
+	if len(sys.argv) > 1:
+		if sys.argv[1] == "-maxIterations" and len(sys.argv)>2:
+			return int(sys.argv[2])
+		else:
+			print("Invalid Option")
+			sys.exit()
+	else:
+		return 5
 
 def main():
+
+	#preProcess() # Need not be done every time. Can be gotten rid off once the consolidated file is built.
+
+	maxIterations = getMaxIterations()
 	weightsTable = buildTable()
-	for key in weightsTable.keys():
-		print(key)
+	print(len(weightsTable.keys()))
+
+	'''for key in weightsTable.keys():
+		print(key)'''
+
 
 if __name__ == "__main__":
 	main()
