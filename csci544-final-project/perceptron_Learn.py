@@ -10,7 +10,13 @@ The maxIterations option is optional.
 For the purpse of debugging, the "weightsTable" file can be checked. It has the entire weightsTable
 Printed. 
 
-TODO: Multiple Iterations still to be implemented.
+The multiple Iterations have been incorporated. 
+
+Performance increase form 1 to 2 iterations is 40 (963-923) labels. 
+
+Ex: python3 perceptron_Learn.py -maxIterations 2
+
+
 '''
 
 import sys
@@ -98,7 +104,7 @@ def correctWeights(weightstable,tuple,predictedLable):
 		#getattr(weightstable[word],predictedLable)-=1
 		#getattr(weightstable[word],tuple.label)+=1
 
-def learn(weightstable):
+def learn(weightstable, maxIterations):
 	# Weights for individual labels. Intially taken to be zero
 	businessWeight = 0
 	logisticsWeight = 0
@@ -109,37 +115,45 @@ def learn(weightstable):
 	correctlyPredictedCount = 0
 
 	fp = open("Consolidated.txt","r")
-	for line in fp:
-		tuple = getTuple(line)
-		for word in tuple.words:
-			# Calculate the weights of individual words in the line. Summation of all the weights in the table
-			businessWeight+=weightstable[word].Business
-			logisticsWeight+=weightstable[word].Logistics
-			personalWeight+=weightstable[word].Personal
 
-		weight = max(businessWeight,logisticsWeight,personalWeight)
+	for i in range(0,maxIterations):
+		# Loop this for maxIterations number of times
+		print("Performing ",i+1,"th/nd iteration")
+		for line in fp:
+			tuple = getTuple(line)
+			for word in tuple.words:
+				# Calculate the weights of individual words in the line. Summation of all the weights in the table
+				businessWeight+=weightstable[word].Business
+				logisticsWeight+=weightstable[word].Logistics
+				personalWeight+=weightstable[word].Personal
 
-		# Predict the label by taking the maximum of the calculated weights. 
-		# In the case of equal weights, the order is Business, Logistics and Personal respectively. 
-		if weight == businessWeight:
-			predictedLable = "Business"
-		elif weight == logisticsWeight:
-			predictedLable = "Logistics"
-		else:
-			predictedLable = "Personal"
+			weight = max(businessWeight,logisticsWeight,personalWeight)
 
-		if tuple.label != predictedLable:
-			correctWeights(weightstable,tuple,predictedLable)
+			# Predict the label by taking the maximum of the calculated weights. 
+			# In the case of equal weights, the order is Business, Logistics and Personal respectively. 
+			if weight == businessWeight:
+				predictedLable = "Business"
+			elif weight == logisticsWeight:
+				predictedLable = "Logistics"
+			else:
+				predictedLable = "Personal"
 
-		else:
-			correctlyPredictedCount+=1
+			if tuple.label != predictedLable:
+				correctWeights(weightstable,tuple,predictedLable)
 
-		# Reset the values for the next line
+			else:
+				correctlyPredictedCount+=1
 
-		predictedLable = ""
-		businessWeight = logisticsWeight = personalWeight = 0
+			# Reset the values for the next line
 
-	print("Number of correctly predicted labels = ",correctlyPredictedCount)
+			predictedLable = ""
+			businessWeight = logisticsWeight = personalWeight = 0
+
+		# Set the file pointer to the beginning of the file
+		fp.seek(0)
+		print("Number of correctly predicted labels = ",correctlyPredictedCount)
+		# Reset the count for the next iteration
+		correctlyPredictedCount = 0
 
 
 def writeWeightsTable(weightsTable):
@@ -163,7 +177,7 @@ def main():
 	weightsTable = buildTable()
 
 	print("Learning ...")
-	learn(weightsTable)
+	learn(weightsTable,maxIterations)
 
 	print("Length of the dictionary =",len(weightsTable.keys()))
 
