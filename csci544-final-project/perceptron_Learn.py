@@ -1,3 +1,18 @@
+'''
+Author: Uthkarsh Satish
+Description: Contains the code for the multiclass perceptron learner. The main function
+calls the required functions and prints each step. 
+
+Usage: python3 perceptron_Learn.py [-maxIterations number]
+
+The maxIterations option is optional. 
+
+For the purpse of debugging, the "weightsTable" file can be checked. It has the entire weightsTable
+Printed. 
+
+TODO: Multiple Iterations still to be implemented.
+'''
+
 import sys
 import re
 import os
@@ -42,7 +57,7 @@ def buildTable():
 				tempTuple.Business = tempTuple.Logistics = tempTuple.Personal = 0
 				weightsTable[word] = tempTuple
 
-	print(count)
+	print("Number of lines processed =",count)
 
 	fp.close()
 		#break # For testing purposes, do it for only one file. Should Remove later. 
@@ -62,16 +77,101 @@ def getMaxIterations():
 	else:
 		return 5
 
+# Correct the weights of the labels depending upon the wrongly predicted label.
+def correctWeights(weightstable,tuple,predictedLable):
+	# Decrement the wrongly predicted label's weight by 1 and increment the correct label's by 1
+	for word in tuple.words:
+		# Could not find a better way to do this. Should be made more elegantly later. 
+		if predictedLable == 'Business':
+			weightstable[word].Business-=1
+		elif predictedLable == 'Logistics':
+			weightstable[word].Logistics-=1
+		else:
+			weightstable[word].Personal-=1
+
+		if tuple.label == 'Business':
+			weightstable[word].Business+=1
+		elif tuple.label == 'Logistics':
+			weightstable[word].Logistics+=1
+		else:
+			weightstable[word].Personal+=1
+		#getattr(weightstable[word],predictedLable)-=1
+		#getattr(weightstable[word],tuple.label)+=1
+
+def learn(weightstable):
+	# Weights for individual labels. Intially taken to be zero
+	businessWeight = 0
+	logisticsWeight = 0
+	personalWeight = 0
+    
+	predictedLable = ""
+
+	correctlyPredictedCount = 0
+
+	fp = open("Consolidated.txt","r")
+	for line in fp:
+		tuple = getTuple(line)
+		for word in tuple.words:
+			# Calculate the weights of individual words in the line. Summation of all the weights in the table
+			businessWeight+=weightstable[word].Business
+			logisticsWeight+=weightstable[word].Logistics
+			personalWeight+=weightstable[word].Personal
+
+		weight = max(businessWeight,logisticsWeight,personalWeight)
+
+		# Predict the label by taking the maximum of the calculated weights. 
+		# In the case of equal weights, the order is Business, Logistics and Personal respectively. 
+		if weight == businessWeight:
+			predictedLable = "Business"
+		elif weight == logisticsWeight:
+			predictedLable = "Logistics"
+		else:
+			predictedLable = "Personal"
+
+		if tuple.label != predictedLable:
+			correctWeights(weightstable,tuple,predictedLable)
+
+		else:
+			correctlyPredictedCount+=1
+
+		# Reset the values for the next line
+
+		predictedLable = ""
+		businessWeight = logisticsWeight = personalWeight = 0
+
+	print("Number of correctly predicted labels = ",correctlyPredictedCount)
+
+
+def writeWeightsTable(weightsTable):
+	oFile = open("weightsTable", "w")
+
+	for k in weightsTable:
+		oFile.write(str(k)+"	"+str(weightsTable[k].Business)+" "+str(weightsTable[k].Personal)+" "+str(weightsTable[k].Logistics))
+		oFile.write("\n") 
+
+	oFile.close()
+
 def main():
 
-	#preProcess() # Need not be done every time. Can be gotten rid off once the consolidated file is built.
 
+	preProcess() # Need not be done every time. Can be gotten rid off once the consolidated file is built.
+
+	print("Getting the maximum Iterations ...")
 	maxIterations = getMaxIterations()
-	weightsTable = buildTable()
-	print(len(weightsTable.keys()))
 
-	'''for key in weightsTable.keys():
-		print(key)'''
+	print("Building the Weights Table ...")
+	weightsTable = buildTable()
+
+	print("Learning ...")
+	learn(weightsTable)
+
+	print("Length of the dictionary =",len(weightsTable.keys()))
+
+	print("Writing the weightstable to an output file ...")
+	writeWeightsTable(weightsTable)
+
+
+
 
 
 if __name__ == "__main__":

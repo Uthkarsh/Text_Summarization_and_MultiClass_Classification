@@ -1,3 +1,7 @@
+'''
+Author: Uthkarsh Satish
+'''
+
 import sys
 import re
 import os
@@ -13,7 +17,7 @@ def preProcess_Helper(fp):
 				if label == None: # To make sure that the later text in the file do not change the actual label
 					label = word
 				continue
-			temp = re.sub(r'[.|,|;|_|:|?|!|@|#|$|%|^|&|*|(|)|"|\'|/|\\|>|<|\-|=|+|\[|]|\}|\{',r'',word)
+			temp = re.sub(r'[.|,|;|_|:|?|!|@|#|$|%|^|&|*|(|)|"|\'|/|\\|>|<|\-|=|+|\[|]|\}|\{|\~|\`',r'',word)
 			temp = re.sub(r'[0-9]',r'',temp)
 			if len(temp)!=0:
 				words.append(temp.lower())
@@ -24,6 +28,8 @@ def preProcess_Helper(fp):
 	return tuple
 
 def preProcess():
+
+	print("Pre Processing ...")
 	path = "trainingData"
 	files = sorted(os.listdir(path))
 
