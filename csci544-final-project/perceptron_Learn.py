@@ -1,5 +1,7 @@
 '''
 Author: Uthkarsh Satish
+
+
 Description: Contains the code for the multiclass perceptron learner. The main function
 calls the required functions and prints each step. 
 
@@ -14,7 +16,11 @@ The multiple Iterations have been incorporated.
 
 Performance increase form 1 to 2 iterations is 40 (963-923) labels. 
 
-Ex: python3 perceptron_Learn.py -maxIterations 2
+Ex: 
+python3 perceptron_Learn.py -maxIterations 2
+
+python3 perceptron_Learn.py -maxIterations 2 --experiment
+
 
 
 '''
@@ -24,6 +30,7 @@ import re
 import os
 from collections import namedtuple
 from consolidate import preProcess
+from consolidate import preProcess_Experimentation
 
 def getTuple(line):
 	label = None
@@ -41,14 +48,14 @@ def getTuple(line):
 
 
 # Builds the weight table for all the words in all the files after tokenizing them. 
-def buildTable():
+def buildTable(IFname):
 		#input = open("trainingData", "r");
 	''' A dictionary for the table of features. The Key for the dictionary will be the 
 	feature name and the value will be a named tuple. The tuples would have the name
 	as the label names -- business, logistics and personal '''
 	weightsTable = dict()
 
-	fp = open("Consolidated.txt", "r")
+	fp = open(IFname, "r")
 
 	count = 0
 	for line in fp:
@@ -104,7 +111,7 @@ def correctWeights(weightstable,tuple,predictedLable):
 		#getattr(weightstable[word],predictedLable)-=1
 		#getattr(weightstable[word],tuple.label)+=1
 
-def learn(weightstable, maxIterations):
+def learn(weightstable, maxIterations, IFile):
 	# Weights for individual labels. Intially taken to be zero
 	businessWeight = 0
 	logisticsWeight = 0
@@ -114,11 +121,11 @@ def learn(weightstable, maxIterations):
 
 	correctlyPredictedCount = 0
 
-	fp = open("Consolidated.txt","r")
+	fp = open(IFile,"r")
 
 	for i in range(0,maxIterations):
 		# Loop this for maxIterations number of times
-		print("Performing ",i+1,"th/nd iteration")
+		print("Performing ",i+1,"th/nd/rd/st iteration")
 		for line in fp:
 			tuple = getTuple(line)
 			for word in tuple.words:
@@ -155,6 +162,9 @@ def learn(weightstable, maxIterations):
 		# Reset the count for the next iteration
 		correctlyPredictedCount = 0
 
+	# Close the file
+	fp.close()
+
 
 def writeWeightsTable(weightsTable):
 	oFile = open("weightsTable", "w")
@@ -165,6 +175,13 @@ def writeWeightsTable(weightsTable):
 
 	oFile.close()
 
+def shouldExperiment():
+	if len(sys.argv)>2:
+		if sys.argv[len(sys.argv)-1] == "--experiment":
+			return True
+		else:
+			return False
+
 def main():
 
 
@@ -173,11 +190,23 @@ def main():
 	print("Getting the maximum Iterations ...")
 	maxIterations = getMaxIterations()
 
+	flag = shouldExperiment()
+
+	IFname = "Consolidated.txt"
+
+	if flag == True:
+		print("Preprocessing the experiment.txt file")
+		preProcess_Experimentation("Consolidated.txt","experiment.txt",1,0)
+		IFname = "experiment.txt"
+
+
+
+
 	print("Building the Weights Table ...")
-	weightsTable = buildTable()
+	weightsTable = buildTable(IFname)
 
 	print("Learning ...")
-	learn(weightsTable,maxIterations)
+	learn(weightsTable,maxIterations, IFname)
 
 	print("Length of the dictionary =",len(weightsTable.keys()))
 
