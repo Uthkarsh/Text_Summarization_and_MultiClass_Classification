@@ -182,21 +182,127 @@ def shouldExperiment():
 		else:
 			return False
 
+
+def evaluate(label, predict, evaluate):
+	#print(label, predict)
+	'''
+	Author: Anushree Narasimha
+	'''
+	if predict == label:
+		if predict == "Business":
+			evaluate.correctClassified[0] += 1
+		elif predict == "Logistics":
+			evaluate.correctClassified[1] += 1
+		elif predict == "Personal":
+			evaluate.correctClassified[2] += 1
+
+	if predict == "Business":
+		evaluate.numClassified[0] += 1
+	elif predict == "Logistics":
+		evaluate.numClassified[1] += 1
+	elif predict == "Personal":
+		evaluate.numClassified[2] += 1
+
+	if label == "Business":
+		evaluate.numTrue[0] += 1
+	elif label == "Logistics":
+		evaluate.numTrue[1] += 1
+	elif label == "Personal":
+		evaluate.numTrue[2] += 1
+
+	'''print(evaluate.correctClassified)
+	print(evaluate.numClassified)
+	print(evaluate.numTrue)
+	print()'''
+	return evaluate
+
+def calculate_performance(evaluate):
+	'''
+	Author: Anushree Narasimha
+	'''
+	for i in range(3):
+		if evaluate.numClassified[i] != 0:
+			evaluate.precision[i] = round(float(evaluate.correctClassified[i]) / evaluate.numClassified[i] , 2)
+	
+		if evaluate.numTrue[i] != 0:
+			evaluate.recall[i] = round(float(evaluate.correctClassified[i]) / evaluate.numTrue[i], 2)
+
+		if (evaluate.precision[i] + evaluate.recall[i]) != 0:
+			evaluate.fScore[i] = round(((2 * evaluate.precision[i] * evaluate.recall[i]) / float(evaluate.precision[i] + evaluate.recall[i])) , 2)
+
+	print("Business, Logistics, Personal")
+	print("Correctly classified : ", evaluate.correctClassified)
+	print("Number classified : ", evaluate.numClassified)
+	print("Number of true : ", evaluate.numTrue)
+	print()
+	print("Precision : ", evaluate.precision)
+	print("Recall    : ", evaluate.recall)
+	print("Fscore    : ", evaluate.fScore)
+
+def classify(weightstable,IFName, OFName):
+	iFp = open(IFName,"r")
+	oFp = open(OFName,"w")
+
+	correctlyPredictedCount = 0
+	evaluation = namedtuple('evaluation',['correctClassified', 'numClassified', 'numTrue', 'precision', 'recall', 'fScore'])
+	evaluation.correctClassified  = [0,0,0]
+	evaluation.numClassified = [0,0,0]
+	evaluation.numTrue = [0,0,0]
+	evaluation.precision = [0,0,0]
+	evaluation.recall = [0,0,0]
+	evaluation.fScore = [0,0,0]
+
+	for line in iFp:
+			predictedLable = ""
+			businessWeight = logisticsWeight = personalWeight = 0
+
+			tuple = getTuple(line)
+			for word in tuple.words:
+				# Calculate the weights of individual words in the line. Summation of all the weights in the table
+				if word in weightstable:
+					businessWeight+=weightstable[word].Business
+					logisticsWeight+=weightstable[word].Logistics
+					personalWeight+=weightstable[word].Personal
+
+			weight = max(businessWeight,logisticsWeight,personalWeight)
+
+			# Predict the label by taking the maximum of the calculated weights. 
+			# In the case of equal weights, the order is Business, Logistics and Personal respectively. 
+			if weight == businessWeight:
+				predictedLable = "Business"
+			elif weight == logisticsWeight:
+				predictedLable = "Logistics"
+			else:
+				predictedLable = "Personal"
+
+			if tuple.label == predictedLable:
+				correctlyPredictedCount+=1
+
+			evaluation = evaluate(tuple.label, predictedLable, evaluation)	
+
+			# Reset the values for the next line
+
+			
+
+	print("Number of labels correctly printed from the classifier = ",correctlyPredictedCount)
+	calculate_performance(evaluation)
+
+
 def main():
 
 
-	preProcess() # Need not be done every time. Can be gotten rid off once the consolidated file is built.
-
+	preProcess("trainingData", "consolidatedTrainingData.txt") # Need not be done every time. Can be gotten rid off once the consolidated file is built.
+	preProcess("testData","consolidatedTestData.txt")
 	print("Getting the maximum Iterations ...")
 	maxIterations = getMaxIterations()
 
 	flag = shouldExperiment()
 
-	IFname = "Consolidated.txt"
+	IFname = "consolidatedTrainingData.txt"
 
 	if flag == True:
 		print("Preprocessing the experiment.txt file")
-		preProcess_Experimentation("Consolidated.txt","experiment.txt",1,0)
+		preProcess_Experimentation("consolidatedTrainingData.txt","experiment.txt",1,0)
 		IFname = "experiment.txt"
 
 
@@ -213,7 +319,8 @@ def main():
 	print("Writing the weightstable to an output file ...")
 	writeWeightsTable(weightsTable)
 
-
+	print("Classifying the testing data")
+	classify(weightsTable, "consolidatedTestData.txt", "Results.txt")
 
 
 

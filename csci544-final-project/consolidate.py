@@ -42,14 +42,14 @@ def preProcess_Helper(fp):
 	tuple.words = words
 	return tuple
 
-def preProcess():
+def preProcess(path, fileName):
 
 	print("Pre Processing ...")
-	path = "trainingData"
+	#path = "trainingData"
 	files = sorted(os.listdir(path))
 
 	# The file in which the consolidated and tokenized Emails with labels will be written to.
-	oFile = open("Consolidated.txt",'w')
+	oFile = open(fileName,'w')
 
 	# For the purpose of testing
 	count = 0
@@ -156,7 +156,6 @@ def preProcess_Experimentation(IFName,OFName,bigrams,trigrams):
 
 
 			
-
 
 
 
