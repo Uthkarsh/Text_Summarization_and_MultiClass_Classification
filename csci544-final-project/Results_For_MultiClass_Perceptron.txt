@@ -1,0 +1,145 @@
+Business, Logistics, Personal
+Correctly classified : [8, 94, 24]
+Number classified : [13, 259, 53]
+Number of true : [150, 125, 50]
+
+Precision : [0.62, 0.36, 0.45]
+Recall    : [0.05, 0.75, 0.48]
+Fscore    : [0.09, 0.49, 0.46]
+
+
+Business, Logistics, Personal
+Correctly classified : [10, 113, 19]
+Number classified : [21, 276, 28]
+Number of true : [150, 125, 50]
+
+Precision : [0.48, 0.41, 0.68]
+Recall    : [0.07, 0.9, 0.38]
+Fscore    : [0.12, 0.56, 0.49]
+
+
+Business, Logistics, Personal
+Correctly classified : [16, 116, 20]
+Number classified : [22, 267, 36]
+Number of true : [150, 125, 50]
+
+Precision : [0.73, 0.43, 0.56]
+Recall    : [0.11, 0.93, 0.4]
+Fscore    : [0.19, 0.59, 0.47]
+
+I=25
+Business, Logistics, Personal
+Correctly classified : [47, 116, 22]
+Number classified : [51, 244, 30]
+Number of true : [150, 125, 50]
+
+Precision : [0.92, 0.48, 0.73]
+Recall    : [0.31, 0.93, 0.44]
+Fscore    : [0.46, 0.63, 0.55]
+
+
+I=50
+Business, Logistics, Personal
+Correctly classified : [32, 114, 23]
+Number classified : [37, 255, 33]
+Number of true : [150, 125, 50]
+
+Precision : [0.86, 0.45, 0.7]
+Recall    : [0.21, 0.91, 0.46]
+Fscore    : [0.34, 0.6, 0.56] 
+
+
+I=27
+Business, Logistics, Personal
+Correctly classified : [40, 117, 23]
+Number classified : [42, 250, 33]
+Number of true : [150, 125, 50]
+
+Precision : [0.95, 0.47, 0.7]
+Recall    : [0.27, 0.94, 0.46]
+Fscore    : [0.42, 0.63, 0.56]
+
+I=30
+Business, Logistics, Personal
+Correctly classified : [69, 114, 22]
+Number classified : [74, 221, 30]
+Number of true : [150, 125, 50]
+
+Precision : [0.93, 0.52, 0.73]
+Recall    : [0.46, 0.91, 0.44]
+Fscore    : [0.62, 0.66, 0.55]
+
+
+Business, Logistics, Personal
+Correctly classified : [41, 116, 22]
+Number classified : [43, 250, 32]
+Number of true : [150, 125, 50]
+
+Precision : [0.95, 0.46, 0.69]
+Recall    : [0.27, 0.93, 0.44]
+Fscore    : [0.42, 0.62, 0.54]
+
+
+
+I=70
+Business, Logistics, Personal
+Correctly classified : [86, 112, 22]
+Number classified : [97, 198, 30]
+Number of true : [150, 125, 50]
+
+Precision : [0.89, 0.57, 0.73]
+Recall    : [0.57, 0.9, 0.44]
+Fscore    : [0.69, 0.7, 0.55]
+
+
+I=100
+Business, Logistics, Personal
+Correctly classified : [106, 99, 25]
+Number classified : [129, 159, 37]
+Number of true : [150, 125, 50]
+
+Precision : [0.82, 0.62, 0.68]
+Recall    : [0.71, 0.79, 0.5]
+Fscore    : [0.76, 0.69, 0.58]
+
+i=120
+Business, Logistics, Personal
+Correctly classified : [56, 117, 21]
+Number classified : [61, 234, 30]
+Number of true : [150, 125, 50]
+
+Precision : [0.92, 0.5, 0.7]
+Recall    : [0.37, 0.94, 0.42]
+Fscore    : [0.53, 0.65, 0.53]
+
+I=180
+Business, Logistics, Personal
+Correctly classified : [114, 98, 26]
+Number classified : [141, 146, 38]
+Number of true : [150, 125, 50]
+
+Precision : [0.81, 0.67, 0.68]
+Recall    : [0.76, 0.78, 0.52]
+Fscore    : [0.78, 0.72, 0.59]
+
+I=100, Split 80:20
+Business, Logistics, Personal
+Correctly classified : [77, 76, 20]
+Number classified : [87, 134, 29]
+Number of true : [120, 90, 40]
+
+Precision : [0.89, 0.57, 0.69]
+Recall    : [0.64, 0.84, 0.5]
+Fscore    : [0.74, 0.68, 0.58]
+
+I=100, Split 50:50
+Business, Logistics, Personal
+Correctly classified : [115, 204, 39]
+Number classified : [133, 436, 59]
+Number of true : [300, 225, 103]
+
+Precision : [0.86, 0.47, 0.66]
+Recall    : [0.38, 0.91, 0.38]
+Fscore    : [0.53, 0.62, 0.48]
+
+
