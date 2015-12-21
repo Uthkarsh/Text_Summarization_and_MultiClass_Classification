@@ -28,6 +28,7 @@ python3 perceptron_Learn.py -maxIterations 2 --experiment
 import sys
 import re
 import os
+import math
 from collections import namedtuple
 from consolidate import preProcess
 from consolidate import preProcess_Experimentation
@@ -182,12 +183,9 @@ def shouldExperiment():
 		else:
 			return False
 
-
+''' Author: Anushree Narasimha '''
 def evaluate(label, predict, evaluate):
 	#print(label, predict)
-	'''
-	Author: Anushree Narasimha
-	'''
 	if predict == label:
 		if predict == "Business":
 			evaluate.correctClassified[0] += 1
@@ -216,10 +214,8 @@ def evaluate(label, predict, evaluate):
 	print()'''
 	return evaluate
 
+''' Author: Anushree Narasimha'''
 def calculate_performance(evaluate):
-	'''
-	Author: Anushree Narasimha
-	'''
 	for i in range(3):
 		if evaluate.numClassified[i] != 0:
 			evaluate.precision[i] = round(float(evaluate.correctClassified[i]) / evaluate.numClassified[i] , 2)
@@ -230,18 +226,20 @@ def calculate_performance(evaluate):
 		if (evaluate.precision[i] + evaluate.recall[i]) != 0:
 			evaluate.fScore[i] = round(((2 * evaluate.precision[i] * evaluate.recall[i]) / float(evaluate.precision[i] + evaluate.recall[i])) , 2)
 
-	print("Business, Logistics, Personal")
-	print("Correctly classified : ", evaluate.correctClassified)
-	print("Number classified : ", evaluate.numClassified)
-	print("Number of true : ", evaluate.numTrue)
-	print()
-	print("Precision : ", evaluate.precision)
-	print("Recall    : ", evaluate.recall)
-	print("Fscore    : ", evaluate.fScore)
+	f = open("perf.txt",'a')
+	f.write("Business, Logistics, Personal\n")
+	f.write("Correctly classified : "+ str(evaluate.correctClassified)+ "\n")
+	f.write("Number classified : "+ str(evaluate.numClassified)+ "\n")
+	f.write("Number of true : "+ str(evaluate.numTrue)+"\n")
+	f.write("\n")
+	f.write("Precision : "+ str(evaluate.precision)+"\n")
+	f.write("Recall    : "+ str(evaluate.recall)+"\n")
+	f.write("Fscore    : "+ str(evaluate.fScore)+"\n\n\n")
+	f.close()
 
-def classify(weightstable,IFName, OFName):
+def classify(weightstable,IFName):
 	iFp = open(IFName,"r")
-	oFp = open(OFName,"w")
+	#oFp = open(OFName,"w")
 
 	correctlyPredictedCount = 0
 	evaluation = namedtuple('evaluation',['correctClassified', 'numClassified', 'numTrue', 'precision', 'recall', 'fScore'])
@@ -287,10 +285,29 @@ def classify(weightstable,IFName, OFName):
 	print("Number of labels correctly printed from the classifier = ",correctlyPredictedCount)
 	calculate_performance(evaluation)
 
+# k is the size of each test chunk
+'''Author: Anushree Narasimha'''
+def kFoldValidation(k, trainpath, testpath):
+	train = os.listdir(trainpath)
+	iterations = math.ceil(len(train)/k)
+	first = True
 
-def main():
+	for i in range(iterations):
+		start = i*k
+		
+		#train = sorted(os.listdir(trainpath))
 
+		for fileName in train[start:start+k]:
+			#test.append(fileName)
+			os.system("move "+trainpath+fileName+" "+testpath)
 
+		perceptron()
+
+		temp_files = os.listdir(testpath)
+		for fileName in temp_files:
+			os.system("move "+testpath+fileName+" "+trainpath)	
+
+def perceptron():
 	preProcess("trainingData", "consolidatedTrainingData.txt") # Need not be done every time. Can be gotten rid off once the consolidated file is built.
 	preProcess("testData","consolidatedTestData.txt")
 	print("Getting the maximum Iterations ...")
@@ -306,8 +323,6 @@ def main():
 		IFname = "experiment.txt"
 
 
-
-
 	print("Building the Weights Table ...")
 	weightsTable = buildTable(IFname)
 
@@ -320,9 +335,25 @@ def main():
 	writeWeightsTable(weightsTable)
 
 	print("Classifying the testing data")
-	classify(weightsTable, "consolidatedTestData.txt", "Results.txt")
+	classify(weightsTable, "consolidatedTestData.txt")
 
 
+def main():
+	flag = 0
+	k = 0
+	for ind in range(len(sys.argv)):
+		if sys.argv[ind] == "-kfold":
+			flag = 1
+			k = int(sys.argv[ind+1])
+			break
+
+	if flag == 0:
+		perceptron()
+		print("Just one perceptron")
+	else:
+		print("K - fold")
+		kFoldValidation(k, "trainingData\\", "testData\\")
+		
 
 if __name__ == "__main__":
 	main()
